@@ -5,9 +5,33 @@ dotenv.config();  // Loading environment variables from .env file
 
 // Creating a transporter using nodemailer
 export const transporter = nodemailer.createTransport({
-    service: 'gmail',  // Using Gmail as the email service provider
-    auth: {
-        user: process.env.EMAIL,     // Fetching email address from environment variables
-        pass: process.env.PASSWORD   // Fetching email password from environment variables
-    }
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
+
+// Test email connection
+export const testEmailConnection = async () => {
+    try {
+        // Debug logging
+        console.log('🔍 Email configuration check:');
+        console.log('EMAIL:', process.env.EMAIL ? '✅ Set' : '❌ Missing');
+        console.log('PASSWORD:', process.env.PASSWORD ? '✅ Set' : '❌ Missing');
+        
+        await transporter.verify();
+        console.log('✅ Email server connection successful');
+        return true;
+    } catch (error) {
+        console.error('❌ Email server connection failed:', error.message);
+        console.error('Full error:', error);
+        return false;
+    }
+};
